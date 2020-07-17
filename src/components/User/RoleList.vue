@@ -105,9 +105,9 @@
                 <i size="mini" class="el-icon-edit-outline"></i>
                 <span class="title-text">角色授权</span>                
             </div>
-            <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+            <el-tree :data="permissionData" show-checkbox default-expand-all node-key="permissId" ref="permissionRef" :check-strictly="defaultCheckNode"  :props="permissionProps"></el-tree>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="permissionDialogVisible = false">取 消</el-button>
+                <el-button @click="permissionCancal">取 消</el-button>
                 <el-button type="primary" @click="permissionFrom">确 定</el-button>
             </span>
         </el-dialog>
@@ -172,7 +172,21 @@ export default {
                 ]
             },
             //控制授权弹窗显示隐藏
-            permissionDialogVisible:false
+            permissionDialogVisible:false,
+            //权限数据
+            permissionData:[],
+            //权限Tree配置
+            permissionProps:{
+                label:'permissName',
+                children:'Children'
+            },
+            //当前要添加权限的角色id
+            addPermissionRoleId:'',
+            //角色拥有权限
+            checkData:[],
+            //树形节点如果选择父级节点，会将子节点全部选中，默认使用严格模式
+            defaultCheckNode:false,
+            
         }
     },
     methods:{
@@ -273,20 +287,74 @@ export default {
         },
         //授权弹窗关闭事件监听
         permissionDialogColse(){
-
-        },
-        //提交授权权限
-        permissionFrom(){
-
-        },
+            this.defaultCheckNode = true  //重点：给数节点赋值之前 先设置为true
+            this.$nextTick(()=>{                
+                this.$refs.permissionRef.setCheckedKeys([]) //给树节点赋值
+                this.defaultCheckNode = false //重点： 赋值完成后 设置为false           
+            });
+        }, 
+        permissionCancal(){
+            this.permissionDialogVisible=false;
+            this.checkData=[];
+        },      
         //授权弹窗、获取角色已有权限、全部权限
-        permission(id){
-            this.permissionDialogVisible=true;
-        },
-        //Tree事件
-        handleNodeClick(){
+        async permission(id){
+            this.defaultCheckNode = true  //重点：给数节点赋值之前 先设置为true
+            //储存当前角色id
+            this.addPermissionRoleId=id;                     
+            const {data:res} = await this.$http.get("Permission/GetPermissions");
+            if(res.code!=200){
+                return this.$msg.error(res.msg);
+            }
 
+            //获取当前角色拥有的权限
+            this.getRolePermission(id);
+            this.permissionData=res.data;
+           this.permissionDialogVisible=true;    
+          
+        },
+        //为角色授权
+        async permissionFrom(){
+            const treeNodeArr = [
+                //获取节点
+                ...this.$refs.permissionRef.getCheckedNodes(false,true)
+            ];
+            const reg= RegExp(/Jason/)
+            const keys=[]
+            for(var i = 0;i<treeNodeArr.length;i++){
+                if(reg.exec(treeNodeArr[i].permissId)==null){
+                    keys.push(treeNodeArr[i].permissId)
+                }               
+            }
+            //如果全部取消授权
+            console.log(keys.length)
+            if(keys.length==0){
+                keys.push("no");
+            }           
+            const strKeys = keys.join(",");            
+             console.log("str:"+strKeys)
+            const {data:res} = await this.$http.post("Permission/RoleAddPermissions?id="+this.addPermissionRoleId+"&permissionStr="+strKeys);
+            if(res.code!=200){
+                return this.$msg.error(res.msg);
+            }
+            this.$msg.success(res.msg);
+            this.permissionDialogVisible = false;
+            this.checkData=[];
+        },
+        //获取角色拥有的权限
+        async getRolePermission(id){
+            const {data:res} = await this.$http.get("Permission/GetRolePermissions?id="+id);
+            if(res.code!=200){
+                return this.$msg.error(res.msg);
+            }
+            this.checkData = res.data.list;
+            console.log( this.checkData)       
+            this.$nextTick(()=>{                
+                this.$refs.permissionRef.setCheckedKeys(this.checkData) //给树节点赋值
+                this.defaultCheckNode = false //重点： 赋值完成后 设置为false           
+            });
         }
+        
 
     },
     created(){

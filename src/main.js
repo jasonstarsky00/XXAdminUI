@@ -15,8 +15,10 @@ axios.defaults.baseURL = 'http://localhost:1111/api/'
     //axios.defaults.baseURL = 'http://localhost:64187/api/'
     //配置axios拦截器添加token
 axios.interceptors.request.use(config => {
+
     config.headers.Authorization = store.getters.userToken;
-    //最后必须返回config
+    console.log("token：" + config.headers.Authorization)
+        //最后必须返回config
     return config
 })
 
