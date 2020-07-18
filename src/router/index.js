@@ -23,7 +23,7 @@ const router = new VueRouter({
                 children: [
                     { path: '/Main/Index', component: HomeIndex, meta: { title: "个人中心" } },
                     { path: '/user/userList', component: UserList, meta: { title: "用户列表" } },
-                    { path: '/user/roleList', component: RoleList, meta: { title: "角色列表" } },
+                    { path: '/role/roleList', component: RoleList, meta: { title: "角色列表" } },
                 ]
             }
 
