@@ -66,12 +66,14 @@ export default {
                 //一级菜单
                 "1":"el-icon-menu",
                 "2":"el-icon-s-tools",
+                "4":"el-icon-s-platform",
                 //二级
                 "100101":"el-icon-s-custom",
                 "100102":"el-icon-s-platform",
                 "200101":"el-icon-s-operation",
                 "200102":"el-icon-s-promotion",
-                "12":"el-icon-user"
+                "12":"el-icon-user",
+                "400101":"el-icon-s-cooperation"
             },
             //当前点击的链接
             activePath:"",

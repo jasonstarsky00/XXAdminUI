@@ -8,6 +8,8 @@ import store from '../store/index'
 import UserList from '../components/User/userList'
 import HomeIndex from '../components/Home/Index'
 import RoleList from '../components/User/RoleList'
+import FictionType from '../components/Fiction/FictionType'
+import FictionList from '../components/Fiction/FictionList'
 Vue.use(VueRouter)
 
 const router = new VueRouter({
@@ -24,6 +26,8 @@ const router = new VueRouter({
                     { path: '/Main/Index', component: HomeIndex, meta: { title: "个人中心" } },
                     { path: '/user/userList', component: UserList, meta: { title: "用户列表" } },
                     { path: '/role/roleList', component: RoleList, meta: { title: "角色列表" } },
+                    { path: '/Fiction/FictionType', component: FictionType, meta: { title: "小说分类" } },
+                    { path: '/Fiction/FictionList', component: FictionList, meta: { title: "小说分类" } },
                 ]
             }
 
